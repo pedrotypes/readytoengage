@@ -24,20 +24,19 @@ import Ship from '@/engine/Ship'
 
 export default {
   name: 'Duel',
-  components: {
-  },
-  data () {
+  components: {},
+  data() {
     return {
       player: {},
-      mob: {}
+      mob: {},
     }
   },
-  created () {
+  created() {
     console.log(ships.transport.model)
     console.log(uuidv4())
 
     this.player = Ship.create()
-  }
+  },
 }
 </script>
 
