@@ -3,18 +3,17 @@ export default class Ship {
   type = ''
   model = ''
   guns = 0
+  engine = 0
   hp = 0
-  target = null
+  fuel = 0
 
-  constructor (s = {}) {
+  constructor(s = {}) {
     this.name = s.name
     this.type = s.type
     this.model = s.model
     this.guns = s.guns
+    this.engine = s.engine
     this.hp = s.hp
-  }
-
-  static create () {
-    return new Ship()
+    this.fuel = s.fuel
   }
 }
