@@ -4,37 +4,41 @@ import Lottery from './Lottery'
 import shipList from './data/ships'
 
 export default class Area {
-  constructor() {
-    const lottery = new Lottery()
+  ship = null
 
-    // Load up all ship into the lottery
+  constructor() {
+    // Create a lottery for ships
+    this.shipLottery = new Lottery()
     for (const type in shipList) {
-      lottery.addEntry({
+      this.shipLottery.addEntry({
         participant: type,
         lots: shipList[type].chance,
       })
     }
 
-    this.lottery = lottery
+    // Create standard dice
+    this.d4 = new Dice(4)
     this.d6 = new Dice(6)
     this.d8 = new Dice(8)
+    this.d10 = new Dice(10)
+    this.d12 = new Dice(12)
     this.d20 = new Dice(20)
+
+    // Populate with mobs and NPCs
+    this.populate()
   }
 
-  generateShips(max = 3) {
-    const ships = []
-
-    // Decide how many ships we have
-    const qty = new Dice(max).roll() - 1 // max 3 ships
-    for (let i = 0; i < qty; i++) {
-      ships.push(this.generateShip())
+  populate() {
+    // About 66% chance of running into a ship
+    if (new Dice(6).roll() > 2) {
+      this.ship = this.generateRandomShip()
+    } else {
+      this.ship = null
     }
-
-    return ships
   }
 
   generateShip() {
-    return new Ship(shipList[this.lottery.getWinner()])
+    return new Ship(shipList[this.shipLottery.getWinner()])
   }
 
   generateRandomShip() {

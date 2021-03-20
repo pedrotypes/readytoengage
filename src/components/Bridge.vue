@@ -44,31 +44,19 @@
 <script>
 import Area from '../engine/Area'
 import Dice from '../engine/Dice'
+import Player from '../engine/Player'
 
 export default {
   name: 'Bridge',
 
   data() {
     return {
-      status: {
-        jumps: 0,
-        kills: 0,
-        fuel: 10,
-        hp: 10,
-        maxHp: 10,
-        guns: 6,
-        engine: 6,
-        scrap: 0,
-        engaged: false,
-        dead: false,
-      },
+      status: {}, // Player
       highscore: {
         jumps: 0,
         kills: 0,
       },
-      area: {
-        ship: null,
-      },
+      area: {}, // Area
     }
   },
 
@@ -84,18 +72,15 @@ export default {
       console.log(msg)
     },
 
+    start() {
+      this.status = new Player()
+    },
+
     jump() {
       this.status.jumps++
 
-      // Logic
-      const area = new Area()
-
-      // About 66% chance of running into a ship
-      if (new Dice(6).roll() > 2) {
-        this.area.ship = area.generateRandomShip()
-      } else {
-        this.area.ship = null
-      }
+      // Generate a new area
+      this.area = new Area()
 
       this.burnFuel(1)
       this.hs('jumps')
@@ -214,6 +199,8 @@ export default {
   },
 
   created() {
+    this.start()
+
     const lshs = window.localStorage.getItem('highscore')
     if (lshs) {
       const hs = JSON.parse(lshs)
