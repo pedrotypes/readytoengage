@@ -113,7 +113,7 @@ export default {
     playerTurn() {
       this.log('Player turn')
       const hp = this.area.ship.hp
-      const dmg = new Dice(this.status.guns).roll()
+      const dmg = new Dice(this.status.guns + 1).roll() - 1
 
       this.log(`Dealt ${dmg} damage`)
       this.area.ship.hp = hp - dmg
@@ -143,7 +143,7 @@ export default {
     enemyTurn() {
       this.log('Enemy turn')
       const hp = this.status.hp
-      const dmg = new Dice(this.area.ship.guns).roll()
+      const dmg = new Dice(this.area.ship.guns + 1).roll() - 1
 
       this.log(`Received ${dmg} damage`)
       this.status.hp = hp - dmg
