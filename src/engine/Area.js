@@ -67,7 +67,7 @@ export default class Area {
     return new Ship({
       guns: this.d6.roll(),
       hp,
-      fuel: rewardDie - 3,
+      fuel: rewardDie - 1,
       engine: this.d6.roll(),
       scrap: rewardDie,
     })
