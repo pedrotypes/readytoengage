@@ -10,12 +10,6 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/Home.vue'),
   },
-  {
-    path: '/duel',
-    name: 'Duel',
-    component: () =>
-      import(/* webpackChunkName: "about" */ '../views/Duel.vue'),
-  },
 ]
 
 const router = new VueRouter({
