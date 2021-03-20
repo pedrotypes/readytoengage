@@ -81,7 +81,11 @@ export default {
 
     canRepair() {
       // Can't repair if not enough scrap or hull at full health
-      return this.status.scrap >= 5 && this.status.hp < 10
+      return (
+        this.status.scrap >= 5 &&
+        this.status.hp < 10 &&
+        this.status.engaged !== true
+      )
     },
   },
 
