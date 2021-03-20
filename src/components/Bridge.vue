@@ -2,10 +2,12 @@
   <div class="bridge">
     <!-- Status -->
     <div class="status">
-      j:{{ status.jumps }} f:{{ status.fuel }} hp:{{ status.hp }} g:{{
-        status.guns
+      j:{{ status.jumps }} f:{{ status.fuel }} hp:{{ status.hp }}/{{
+        status.maxHp
       }}
-      e:{{ status.engine }} k:{{ status.kills }}
+      g:{{ status.guns }} e:{{ status.engine }} k:{{ status.kills }} s:{{
+        status.scrap
+      }}
     </div>
 
     <div class="" v-if="status.dead">
@@ -53,8 +55,10 @@ export default {
         kills: 0,
         fuel: 10,
         hp: 10,
+        maxHp: 10,
         guns: 6,
         engine: 6,
+        scrap: 0,
         engaged: false,
         dead: false,
       },
@@ -124,8 +128,10 @@ export default {
       this.status.kills++
 
       // Roll to capture fuel
-      const f = new Dice(this.area.ship.fuel).roll()
-      this.addFuel(f)
+      this.addFuel(new Dice(this.area.ship.fuel).roll())
+
+      // Roll to capture scrap
+      this.addScrap(new Dice(this.area.ship.scrap).roll())
 
       // Clear foe
       this.area.ship = null
@@ -186,6 +192,11 @@ export default {
     addFuel(qty) {
       this.status.fuel = this.status.fuel + qty
       this.log(`Added ${qty}t of fuel`)
+    },
+
+    addScrap(qty) {
+      this.status.scrap = this.status.scrap + qty
+      this.log(`Loaded up on ${qty}t of scrap`)
     },
 
     die(reason) {

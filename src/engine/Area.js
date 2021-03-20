@@ -43,6 +43,7 @@ export default class Area {
       hp: this.d20.roll(),
       fuel: this.d8.roll(),
       engine: this.d6.roll(),
+      scrap: this.d6.roll(),
     })
   }
 }

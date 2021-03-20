@@ -6,6 +6,7 @@ export default class Ship {
   engine = 0
   hp = 0
   fuel = 0
+  scrap = 0
 
   constructor(s = {}) {
     this.name = s.name
@@ -15,5 +16,6 @@ export default class Ship {
     this.engine = s.engine
     this.hp = s.hp
     this.fuel = s.fuel
+    this.scrap = s.scrap
   }
 }
