@@ -6,8 +6,8 @@ export default {
     guns: 0,
     hp: 3,
     drops: {
-      fuel: 3
-    }
+      fuel: 3,
+    },
   },
   freighter: {
     type: 'freighter',
@@ -16,8 +16,8 @@ export default {
     guns: 3,
     hp: 10,
     drops: {
-      fuel: 10
-    }
+      fuel: 10,
+    },
   },
   gunboat: {
     type: 'gunboat',
@@ -27,7 +27,7 @@ export default {
     hp: 10,
     drops: {
       fuel: 5,
-      guns: 1
-    }
-  }
+      guns: 1,
+    },
+  },
 }

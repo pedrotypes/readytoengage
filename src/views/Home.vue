@@ -11,7 +11,7 @@ import Bridge from '@/components/Bridge.vue'
 export default {
   name: 'Home',
   components: {
-    Bridge
-  }
+    Bridge,
+  },
 }
 </script>

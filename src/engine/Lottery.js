@@ -10,13 +10,13 @@ export default class Lottery {
    *   lots: int
    * }
    */
-  addEntry (entry) {
+  addEntry(entry) {
     this.entries.push(entry)
     this.lotsTotal += entry.lots
     return this
   }
 
-  getWinner () {
+  getWinner() {
     const rolled = new Dice(this.lotsTotal).roll()
     let currentLot = 0
 
