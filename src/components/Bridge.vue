@@ -5,19 +5,21 @@
       j:{{ status.jumps }} f:{{ status.fuel }} hp:{{ status.hp }}/{{
         status.maxHp
       }}
-      g:{{ status.guns }} e:{{ status.engine }} k:{{ status.kills }} s:{{
-        status.scrap
-      }}
+      s:{{ status.scrap }} g:{{ status.guns }} k:{{ status.kills }}
     </div>
 
     <div class="" v-if="status.dead">
-      {{ status.dead.reason }} after {{ status.jumps }} jumps.
+      <p>{{ status.dead.reason }} after {{ status.jumps }} jumps.</p>
+      <p><a href="#" @click.prevent="start">again</a></p>
     </div>
 
-    <div v-if="!status.dead">
-      <!-- Jump button -->
-      <div>
+    <div v-else>
+      <!-- Ship controls -->
+      <div class="controls">
         <a href="#" v-if="canJump" @click.prevent="jump">activate jump drive</a>
+        <a href="#" v-if="canRepair" @click.prevent="repair"
+          >patch up the hull</a
+        >
       </div>
 
       <!-- Ships in range -->
@@ -32,11 +34,21 @@
           >
         </p>
       </div>
+
+      <!-- Base -->
+      <div v-if="area.base">There's a lonely {{ area.base.type }} here</div>
+
+      <!-- Logs -->
+      <ul class="logs">
+        <li v-for="(l, k) in logs" :key="k">
+          {{ l }}
+        </li>
+      </ul>
     </div>
 
     <!-- Highscores -->
     <div class="highscores">
-      hs/ j:{{ this.highscore.jumps }} k:{{ this.highscore.kills }}
+      h/s j:{{ this.highscore.jumps }} k:{{ this.highscore.kills }}
     </div>
   </div>
 </template>
@@ -57,6 +69,7 @@ export default {
         kills: 0,
       },
       area: {}, // Area
+      logs: [],
     }
   },
 
@@ -65,15 +78,21 @@ export default {
       // Can't jump if fuel is out or engaged by an enemy
       return this.status.fuel > 0 && this.status.engaged !== true
     },
+
+    canRepair() {
+      // Can't repair if not enough scrap or hull at full health
+      return this.status.scrap >= 5 && this.status.hp < 10
+    },
   },
 
   methods: {
     log(msg) {
-      console.log(msg)
+      this.logs.push(msg)
     },
 
     start() {
       this.status = new Player()
+      this.area = {}
     },
 
     jump() {
@@ -81,13 +100,25 @@ export default {
 
       // Generate a new area
       this.area = new Area()
+      this.logs = []
 
       this.burnFuel(1)
       this.hs('jumps')
     },
 
+    repair() {
+      this.status.scrap = this.status.scrap - 5
+      this.status.hp++
+      if (this.status.hp === this.status.maxHp) {
+        this.log('Good as new')
+      } else {
+        this.log('Makeshift repairs make poor use of materials')
+      }
+    },
+
     attack() {
       if (!this.status.engaged) {
+        this.log('Matched orbits')
         this.engage()
       }
 
@@ -96,11 +127,9 @@ export default {
     },
 
     playerTurn() {
-      this.log('Player turn')
       const hp = this.area.ship.hp
       const dmg = new Dice(this.status.guns + 1).roll() - 1
 
-      this.log(`Dealt ${dmg} damage`)
       this.area.ship.hp = hp - dmg
 
       if (this.area.ship.hp <= 0) {
@@ -111,6 +140,8 @@ export default {
     kill() {
       this.disengage()
       this.status.kills++
+
+      this.log('Enemy vessel destroyed')
 
       // Roll to capture fuel
       this.addFuel(new Dice(this.area.ship.fuel).roll())
@@ -126,11 +157,9 @@ export default {
     },
 
     enemyTurn() {
-      this.log('Enemy turn')
       const hp = this.status.hp
       const dmg = new Dice(this.area.ship.guns + 1).roll() - 1
 
-      this.log(`Received ${dmg} damage`)
       this.status.hp = hp - dmg
 
       if (this.status.hp <= 0) {
@@ -140,12 +169,10 @@ export default {
 
     engage() {
       this.status.engaged = true
-      this.log('engaging enemy')
     },
 
     disengage() {
       this.status.engaged = false
-      this.log('disengaged')
     },
 
     evade() {
@@ -156,14 +183,12 @@ export default {
       ) {
         // Escapes
         this.disengage()
+        this.log('Moved out of enemy range')
       } else {
         // Foe gets a free shot
-        this.log('failed to disengage')
+        this.log('Evasion failed')
         this.enemyTurn()
       }
-
-      // Consume fuel
-      this.burnFuel(1)
     },
 
     burnFuel(qty = 1) {
@@ -175,13 +200,15 @@ export default {
     },
 
     addFuel(qty) {
+      if (qty <= 0) return
       this.status.fuel = this.status.fuel + qty
-      this.log(`Added ${qty}t of fuel`)
+      this.log(`Reclaimed ${qty}t of fuel`)
     },
 
     addScrap(qty) {
+      if (qty <= 0) return
       this.status.scrap = this.status.scrap + qty
-      this.log(`Loaded up on ${qty}t of scrap`)
+      this.log(`Picked up ${qty}t of scrap materials`)
     },
 
     die(reason) {
@@ -213,6 +240,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.status {
+  height: 3rem;
+}
+
+.controls {
+  height: 3rem;
+
+  a {
+    margin-left: 1rem;
+  }
+
+  a:first-child {
+    margin-left: 0;
+  }
+}
+
+.logs {
+  color: #ddd;
+  padding-left: 0;
+
+  li {
+    list-style: none;
+  }
+}
+
 .highscores {
   position: absolute;
   bottom: 1rem;

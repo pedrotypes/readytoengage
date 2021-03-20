@@ -5,6 +5,7 @@ import shipList from './data/ships'
 
 export default class Area {
   ship = null
+  base = false
 
   constructor() {
     // Create a lottery for ships
@@ -35,6 +36,20 @@ export default class Area {
     } else {
       this.ship = null
     }
+
+    // If no ship, maybe there's a base
+    if (!this.ship && this.d12.roll() === 12) {
+      const lottery = new Lottery()
+
+      lottery.addEntry({ participant: 'Deep Space Installation', lots: 10 })
+      lottery.addEntry({ participant: 'Mining Outpost', lots: 10 })
+      lottery.addEntry({ participant: 'Research Vessel', lots: 10 })
+      lottery.addEntry({ participant: 'Planet', lots: 10 })
+      lottery.addEntry({ participant: 'Asteroid Base', lots: 10 })
+      lottery.addEntry({ participant: 'Space Station', lots: 10 })
+
+      this.base = { type: lottery.getWinner() }
+    }
   }
 
   generateShip() {
@@ -42,12 +57,19 @@ export default class Area {
   }
 
   generateRandomShip() {
+    const hp = this.d20.roll()
+
+    // Bigger hulls can yield better rewards
+    let rewardDie = 4
+    if (hp >= 8) rewardDie = 6
+    if (hp >= 12) rewardDie = 8
+
     return new Ship({
       guns: this.d6.roll(),
-      hp: this.d20.roll(),
-      fuel: this.d8.roll(),
+      hp,
+      fuel: rewardDie - 3,
       engine: this.d6.roll(),
-      scrap: this.d6.roll(),
+      scrap: rewardDie,
     })
   }
 }
