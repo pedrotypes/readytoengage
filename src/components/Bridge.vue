@@ -20,6 +20,9 @@
         <a href="#" v-if="canRepair" @click.prevent="repair"
           >patch up the hull</a
         >
+        <a href="#" v-if="canScoop" @click.prevent="scoop"
+          >perform coronal dive</a
+        >
       </div>
 
       <!-- Ships in range -->
@@ -87,15 +90,24 @@ export default {
         this.status.engaged !== true
       )
     },
+
+    canScoop() {
+      return true
+    },
   },
 
   methods: {
+    roll(max) {
+      return new Dice(max).roll()
+    },
+
     log(msg) {
       this.logs.push(msg)
     },
 
     start() {
       this.status = new Player()
+      this.logs = []
       this.area = {}
     },
 
@@ -122,12 +134,23 @@ export default {
 
     attack() {
       if (!this.status.engaged) {
-        this.log('Matched orbits')
         this.engage()
       }
 
       this.playerTurn()
       if (this.area.ship) this.enemyTurn()
+    },
+
+    scoop() {
+      // Only adds 1 fuel. Jumping requires 2
+      this.addFuel(1, 'Synthesized')
+
+      // Roll for dive failure, which will result in damage
+      const failureRoll = this.roll(3) // 33% chance of damage
+      if (failureRoll === 1) {
+        const dmg = this.roll(6)
+        this.takeDamage(dmg, 'overheating')
+      }
     },
 
     playerTurn() {
@@ -203,16 +226,27 @@ export default {
       }
     },
 
-    addFuel(qty) {
+    addFuel(qty, msg) {
       if (qty <= 0) return
       this.status.fuel = this.status.fuel + qty
-      this.log(`Reclaimed ${qty}t of fuel`)
+      if (!msg) {
+        msg = 'Got'
+      }
+      this.log(`${msg} ${qty}t of fuel`)
     },
 
     addScrap(qty) {
       if (qty <= 0) return
       this.status.scrap = this.status.scrap + qty
       this.log(`Picked up ${qty}t of scrap materials`)
+    },
+
+    takeDamage(dmg, cause) {
+      this.log(`Took ${dmg}hp of damage from ${cause}`)
+      this.status.hp = this.status.hp - dmg
+      if (this.status.hp <= 0) {
+        this.die('Ship blew apart')
+      }
     },
 
     die(reason) {
