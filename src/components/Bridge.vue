@@ -120,6 +120,29 @@ export default {
 
       this.burnFuel(1)
       this.hs('jumps')
+
+      // Force a special ship to be there
+      this.area.ship = {
+        name: '',
+        hp: 10,
+        fuel: 5,
+        engine: 3,
+        scrap: 5,
+        weapons: [
+          {
+            class: 'cannon',
+            type: 'kinetic',
+            damage: 2,
+            hp: 1,
+          },
+          {
+            class: 'cannon',
+            type: 'kinetic',
+            damage: 2,
+            hp: 1,
+          },
+        ],
+      }
     },
 
     repair() {
