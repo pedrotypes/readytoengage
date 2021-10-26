@@ -10,6 +10,14 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/Home.vue'),
   },
+
+  // Special combat area
+  {
+    path: '/combat',
+    name: 'Combat',
+    component: () =>
+      import(/* webpackChunkName: "combat" */ '../views/Combat.vue'),
+  },
 ]
 
 const router = new VueRouter({
